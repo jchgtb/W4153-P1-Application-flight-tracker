@@ -19,3 +19,6 @@ class FlightCreate(BaseModel):
                 "departure_location": "JFK"
             }
         }
+
+class FlightIDRequest(BaseModel):
+    flight_id: int

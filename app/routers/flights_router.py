@@ -2,7 +2,7 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from app.services.flights_service import FlightService
 from app.utils.dependencies import get_db
-from app.models.flight_model import FlightCreate
+from app.models.flight_model import FlightCreate, FlightIDRequest
 
 router = APIRouter()
 
@@ -24,9 +24,9 @@ def get_flight_by_user_id(user_id: int, db: Session = Depends(get_db)):
     return flight
 
 @router.post("/flights/nearby", tags=["flights"])
-def get_nearby_flights(flight_id: int, db: Session = Depends(get_db)):
+def get_nearby_flights(flight_request: FlightIDRequest, db: Session = Depends(get_db)):
     flight_service = FlightService(db)
-
+    flight_id = flight_request.flight_id
     flights = flight_service.get_nearby_flights(flight_id)
 
     if not flights:

@@ -21,6 +21,7 @@ class FlightRepository:
 
     def get_nearby_flights(self, flight_id: int):
         current_flight = self.db.query(Flight).filter(Flight.flight_id == flight_id).first()
+
         if not current_flight:
             return None
 
@@ -28,9 +29,14 @@ class FlightRepository:
         three_hours_before = current_flight_datetime - timedelta(hours=3)
         three_hours_after = current_flight_datetime + timedelta(hours=3)
 
-        nearby_flights = self.db.query(Flight).filter(
-            (datetime.combine(Flight.flight_date, Flight.flight_time).between(three_hours_before, three_hours_after)),
-            Flight.flight_id != flight_id
-        ).all()
+        all_flights = self.db.query(Flight).filter(Flight.flight_id != flight_id).all()
+        nearby_flights = []
+        for flight in all_flights:
+            flight_datetime = datetime.combine(flight.flight_date, flight.flight_time)
+            if three_hours_before <= flight_datetime <= three_hours_after:
+                nearby_flights.append(flight)
 
         return nearby_flights
+
+    def get_flight_by_user_id(self, user_id: int) -> Flight:
+        return self.db.query(Flight).filter(Flight.user_id == user_id).first()
